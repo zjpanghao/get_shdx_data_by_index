@@ -61,20 +61,25 @@ public:
       char buffer[5] = {0};
       strncpy(buffer, time_str.c_str(), 4);
       save_tm.tm_year = atoi(buffer) - 1900;
+      printf("%d\n", save_tm.tm_year);
       memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer + 4, time_str.c_str(), 2);
+      strncpy(buffer, time_str.c_str()+4, 2);
       save_tm.tm_mon = atoi(buffer) - 1;
       memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer + 6, time_str.c_str(), 2);
+      strncpy(buffer, time_str.c_str()+6, 2);
       save_tm.tm_mday = atoi(buffer);
       memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer + 8, time_str.c_str(), 2);
+      strncpy(buffer, time_str.c_str()+8, 2);
       save_tm.tm_hour = atoi(buffer);
+      memset(buffer, 0, sizeof(buffer));
+      strncpy(buffer, time_str.c_str()+10, 2);
+      save_tm.tm_min = atoi(buffer);
+
       return mktime(&save_tm);
   }
 
   bool check_task_map_overtime(time_t save_stamp) {
-    return time(NULL) - save_stamp > TIME_SECONDS_DELAYED + 2*3600;
+    return time(NULL) - save_stamp > TIME_SECONDS_DELAYED + 10*60;
   }
 
   void check_and_clear_task_map() {

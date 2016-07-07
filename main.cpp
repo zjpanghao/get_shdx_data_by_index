@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 			<< "Thread num:" << max_thread_num;
 	
 	char push_data[100] = {0};
-	int partition = 1;
+	int partition = 0;
 	const char* topic = "kunyan_to_upload_inter_tab_up";
 
 	/*init kafka*/
@@ -154,7 +154,7 @@ static void *clear_task_thread(void* arg) {
   work_info* info = (work_info*)arg;
   while(true) {
     info->check_and_clear_task_map();
-    sleep(3600);
+    sleep(5*60);
   }
   return NULL;
 }
