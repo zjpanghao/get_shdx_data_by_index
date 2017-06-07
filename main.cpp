@@ -218,13 +218,13 @@ void* run(void* arg) {
 			get_url_by_toKen(token, fetch_url_time_key, url, iter->first);
 			std::string result;
 			if (!get_data_from_shanghai_1(url, result, token, curl)) {
-         if (iter->first % 100 == 0)
+         if (iter->first % 10000 == 0)
 				   LOG(ERROR) << url << "feth url failed" << url_time_key;
 				iter->second = TASK_RESULT_NULL;
 				continue;
 			}
 			else {
-	      if(iter->first % 100 == 0)		
+	      if(iter->first % 10000 == 0)		
           LOG(INFO) << url << " success " << url_time_key;
 				iter->second = TASK_FINISHED;
         int rc;
@@ -232,7 +232,7 @@ void* run(void* arg) {
 
 				result =  tele.GetProcessResult(result.c_str());
 				if (PUSH_DATA_SUCCESS != (rc = producer_push_data(result.c_str(), result.length(), info->producer_))) {
-         if (iter->first % 100 == 0)
+         if (iter->first % 10000 == 0)
 					LOG(ERROR) << "push data failed" << result.length() << "rc:" << rc;
         }
 			}
