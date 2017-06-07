@@ -10,6 +10,7 @@
 #include "CurlWrapper.h"
 #include "base64.h"
 #include "common.h"
+#include "glog/logging.h"
 using namespace std;
 
 std::string LastSysTime_min = "";
@@ -27,13 +28,13 @@ Json::Value get_json_array(const std::string &str)
 	return root;
 }
 
-std::string get_toKen_by_url(const char* url)
+std::string get_toKen_by_url(const char* url, CURL *curl)
 {
 	std::string toKen = "";
 	Json::Value root;
 
 	string str="";
-	str = CurlWrapper::get_instance()->access_http(url);
+	str = CurlWrapper::get_instance()->access_http(url, curl);
 	//cout << "get_toKen_by_url str=" << str << endl;
 	if ("" != str)
 	{
@@ -74,13 +75,13 @@ void get_url_by_toKen(const std::string &url2_toKen, const std::string& url_time
 	url = url_prefix + str_i;
 }
 
-std::string get_value_by_url(const std::string &url, std::string& token)
+std::string get_value_by_url(const std::string &url, std::string& token, CURL *curl)
 {
 	std::string value = "";
 	Json::Value root;
 
 	string str = "";
-	str = CurlWrapper::get_instance()->access_http(url.c_str());
+	str = CurlWrapper::get_instance()->access_http(url.c_str(), curl);
 	if (str != "")
 	{
 		//cout << "str=" << str << endl;
@@ -89,19 +90,23 @@ std::string get_value_by_url(const std::string &url, std::string& token)
 	else
 		return value;
     //printf("%ld\n", root["code"].asInt64());
-	value = root["result"]["value"].asString();
 	long long code = root["code"].asInt64();
 	if (code == MESSAGE_WRONG_TOKEN)
 	{
 		const char* token_url = "http://61.129.39.71/telecom-dmp/getToken?apiKey=98f5103019170612fd3a486e3d872c48&sign=6a653929c81a24ba14e41e25b6047e5dec55e76e";
-		token = get_toKen_by_url(token_url);
-	}
+		token = get_toKen_by_url(token_url, curl);
+                return "";
+	} else {
+          // LOG(INFO) << (code == 200200);
+        }
+        if (!root["result"].isNull() && !root["result"]["value"].isNull())
+	  value = root["result"]["value"].asString();
 	return value;
 }
 
-bool get_data_from_shanghai_1(std::string& url, std::string& value_base64_decode, std::string& token)
+bool get_data_from_shanghai_1(std::string& url, std::string& value_base64_decode, std::string& token, CURL *curl)
 {
-	value_base64_decode = get_value_by_url(url, token);
+	value_base64_decode = get_value_by_url(url, token, curl);
 	if ("" == value_base64_decode)
 		return false;
 	return true;

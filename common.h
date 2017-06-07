@@ -12,7 +12,7 @@
 using namespace std;
 
 #define MAX_THREAD_NUM  80
-#define MAX_INDEX_NUM 20000
+#define MAX_INDEX_NUM 160000
 #define MAX_TASKS_TOTAL_SIZE 60
 #define TASKS_PER_NUM 10
 #define TIME_SECONDS_DELAYED 5 * 60
