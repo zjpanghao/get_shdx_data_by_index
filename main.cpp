@@ -85,7 +85,6 @@ int main(int argc, char* argv[])
 	char push_data[100] = {0};
 	int partition = 0;
 	const char* topic = "kun_origin";
-
 	/*init kafka*/
 	wrapper_Info test_info;
 	if (PRODUCER_INIT_SUCCESS == producer_init(partition, topic, kafka_server.c_str(), &test_msg_delivered, &test_info))

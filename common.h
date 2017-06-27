@@ -61,6 +61,7 @@ public:
       strncpy(buffer, time_str.c_str()+10, 2);
       save_tm.tm_min = atoi(buffer);
 
+
       return mktime(&save_tm);
   }
 
