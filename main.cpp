@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	}
 	TeleCommand cmd = INVALID_COMMAND;
 	//default config
-	std::string kafka_server = "222.73.57.14:9092";
+	std::string kafka_server = "localhost:9092";
 	task_start_index = 0;
 	
 	for (int i = 0; i < argc; i++) {
@@ -84,7 +84,11 @@ int main(int argc, char* argv[])
 	
 	char push_data[100] = {0};
 	int partition = 0;
+<<<<<<< HEAD
+	const char* topic = "kun_origin";
+=======
 	const char* topic = "kunyan_to_upload_inter_tab_up";
+>>>>>>> 30cdb3c93bdb1860d7a1666cd556f96259f19781
 
 	/*init kafka*/
 	wrapper_Info test_info;
@@ -95,9 +99,10 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	CurlWrapper::get_instance();
+  CURL *curl = CurlWrapper::get_instance()->CreateCurl();
 	const char * token_url = "http://61.129.39.71/telecom-dmp/getToken?apiKey=98f5103019170612fd3a486e3d872c48&sign=6a653929c81a24ba14e41e25b6047e5dec55e76e";
-	url2_toKen = get_toKen_by_url(token_url);
+	url2_toKen = get_toKen_by_url(token_url, curl);
+  curl_easy_cleanup(curl);
 	
 
 	work_info tasks_info(&test_info);
@@ -152,6 +157,7 @@ time_t get_fetch_timestamp() {
 
 static void *clear_task_thread(void* arg) {
   work_info* info = (work_info*)arg;
+  sleep(3600);
   while(true) {
     info->check_and_clear_task_map();
     sleep(5*60);
@@ -162,18 +168,18 @@ static void *clear_task_thread(void* arg) {
 static std::string get_strtime(time_t timestamp)
 {
   struct tm current_tm;
-	struct tm* current_time = &current_tm;
+  struct tm* current_time = &current_tm;
   localtime_r(&timestamp, current_time);
-	char buffer[13] = { 0 };
-	sprintf(buffer, "%d%02d%02d%02d%02d",
+  char buffer[13] = { 0 };
+  sprintf(buffer, "%04d%02d%02d%02d%02d",
 		current_time->tm_year + 1900,
 		current_time->tm_mon + 1,
 		current_time->tm_mday,
 		current_time->tm_hour,
 		current_time->tm_min);
 
-	string str = buffer;
-	return str;
+  string str = buffer;
+  return str;
 }
 
 std::string get_fetch_url_time_key(std::string url_time_key) {
@@ -189,18 +195,23 @@ std::string get_fetch_url_time_key(std::string url_time_key) {
   return s;
 }
 
+static bool TokenInvalid(std::string value) {
+  const std::string valid_str = ":400402";
+  return value.find(valid_str) != std::string::npos;
+}
+
 void* run(void* arg) {
 	std::string token = url2_toKen;
+        CURL *curl = CurlWrapper::get_instance()->CreateCurl();
 	while (true) {
 		work_info* info = (work_info*)arg;
 		std::vector<std::string> url_vec;
 		std::set<std::string> value_set;
 		std::map<int, TaskState> task_indexs;
-    time_t fetch_time = get_fetch_timestamp();
+                time_t fetch_time = get_fetch_timestamp();
 		std::string url_time_key = get_strtime(fetch_time);
 		get_tasks(info, url_time_key, task_indexs, TASKS_PER_NUM);
 		if (task_indexs.size() == 0) {
-      //printf("sleep");
 			sleep(1);
 			continue;
 		}
@@ -210,20 +221,24 @@ void* run(void* arg) {
      			std::string fetch_url_time_key = get_fetch_url_time_key(url_time_key);
 			get_url_by_toKen(token, fetch_url_time_key, url, iter->first);
 			std::string result;
-			if (!get_data_from_shanghai_1(url, result, token)) {
-				LOG(ERROR) << url << "fetch url failed" << url_time_key;
+			if (!get_data_from_shanghai_1(url, result, token, curl)) {
+         if (iter->first % 10000 == 0)
+				   LOG(ERROR) << url << "feth url failed" << url_time_key;
 				iter->second = TASK_RESULT_NULL;
 				continue;
 			}
 			else {
-			
-        LOG(INFO) << url << " success " << url_time_key;
+	      if(iter->first % 10000 == 0)		
+          LOG(INFO) << url << " success " << url_time_key;
 				iter->second = TASK_FINISHED;
         int rc;
 				TeleCompress tele;
+
 				result =  tele.GetProcessResult(result.c_str());
-				if (PUSH_DATA_SUCCESS != (rc = producer_push_data(result.c_str(), result.length(), info->producer_)))
-					LOG(ERROR) << "push data failed" << result << "rc:" << rc;
+				if (PUSH_DATA_SUCCESS != (rc = producer_push_data(result.c_str(), result.length(), info->producer_))) {
+         if (iter->first % 10000 == 0)
+					LOG(ERROR) << "push data failed" << result.length() << "rc:" << rc;
+        }
 			}
 		}
 	}

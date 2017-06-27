@@ -12,7 +12,7 @@
 using namespace std;
 
 #define MAX_THREAD_NUM  80
-#define MAX_INDEX_NUM 20000
+#define MAX_INDEX_NUM 160000
 #define MAX_TASKS_TOTAL_SIZE 60
 #define TASKS_PER_NUM 10
 #define TIME_SECONDS_DELAYED 5 * 60
@@ -34,25 +34,11 @@ class work_info {
 
 public:
 	work_info(wrapper_Info* producer) {
-		pthread_mutexattr_t mattr;
-		pthread_mutexattr_init(&mattr);
-		pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_RECURSIVE);
-		pthread_mutex_init(&mutex_, &mattr);
-		pthread_mutexattr_destroy(&mattr);
+		pthread_mutex_init(&mutex_, NULL);
 		producer_ = producer;
 	}
 	~work_info() {
 
-	}
-
-	void clear_overtime_tasks() {
-		/*printf("clear overtime tasks\n");
-		if (MAX_TASKS_TOTAL_SIZE < tasks_per_minute_.size()) {
-			std::map<std::string, std::map<int, TaskState>* >::iterator iter = tasks_per_minute_.begin();
-			printf("delete %p\n", iter->second);
-			delete iter->second;
-			tasks_per_minute_.erase(iter);
-		}*/
 	}
 
   time_t get_timestamp_from_str(string time_str) {
@@ -78,22 +64,18 @@ public:
       return mktime(&save_tm);
   }
 
+<<<<<<< HEAD
+=======
   bool check_task_map_overtime(time_t save_stamp) {
     return time(NULL) - save_stamp > TIME_SECONDS_DELAYED + 10*60;
   }
 
+>>>>>>> 30cdb3c93bdb1860d7a1666cd556f96259f19781
   void check_and_clear_task_map() {
-    time_t now_time = time(NULL);
     pthread_mutex_lock(&mutex_);
-    std::map<std::string, int>::iterator it = tasks_per_minute_.begin();
-    while (it != tasks_per_minute_.end()) {
-      std::string time_str = it->first;
-      time_t save_stamp = get_timestamp_from_str(time_str);
-      if (check_task_map_overtime(save_stamp)) {
-        tasks_per_minute_.erase(it++);
-      } else {
-        it++;
-      }
+    // keep 60 
+    while (tasks_per_minute_.size() > 60) {
+      tasks_per_minute_.erase(tasks_per_minute_.begin());
     }
     pthread_mutex_unlock(&mutex_);
   }

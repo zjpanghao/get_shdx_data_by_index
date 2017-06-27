@@ -108,6 +108,9 @@ int producer_init(const int partition, const char* topic, const char* brokers, M
 	return PRODUCER_INIT_SUCCESS;
 }
 
+static int part = 0;
+const int max_part =  10;
+pthread_mutex_t  lock = PTHREAD_MUTEX_INITIALIZER;
 int producer_push_data(const char* buf, const int buf_len, const wrapper_Info* producer_info)
 {
 	int produce_ret;
@@ -115,9 +118,14 @@ int producer_push_data(const char* buf, const int buf_len, const wrapper_Info* p
 		return 0;
 	if (0 == buf_len || buf_len > MAX_BUF_LEN)
 		return -2;
+        int tpart = 0;
+        pthread_mutex_lock(&lock);
+        tpart = part;
+        part = (part + 1) % max_part;
+        pthread_mutex_unlock(&lock);
 	//printf("118producer->topic:%s, producer->partition:%d\n", producer_info->topic, producer_info->partition);
 	/* Send/Produce message. */
-	produce_ret = rd_kafka_produce(producer_info->rkt, producer_info->partition,
+	produce_ret = rd_kafka_produce(producer_info->rkt, tpart,
 		RD_KAFKA_MSG_F_COPY,
 		/* Payload and length */
 		(void*)buf, (size_t)buf_len,
