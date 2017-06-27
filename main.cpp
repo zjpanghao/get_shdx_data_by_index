@@ -231,8 +231,9 @@ void* run(void* arg) {
 
 				result =  tele.GetProcessResult(result.c_str());
 				if (PUSH_DATA_SUCCESS != (rc = producer_push_data(result.c_str(), result.length(), info->producer_))) {
-         if (iter->first % 10000 == 0)
-					LOG(ERROR) << "push data failed" << result.length() << "rc:" << rc;
+          if (iter->first % 10000 == 0)
+					  LOG(ERROR) << "push data failed" << result.length() << "rc:" << rc;
+          sleep(1);
         }
 			}
 		}
