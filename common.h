@@ -41,40 +41,30 @@ public:
 
 	}
 
-	void clear_overtime_tasks() {
-		/*printf("clear overtime tasks\n");
-		if (MAX_TASKS_TOTAL_SIZE < tasks_per_minute_.size()) {
-			std::map<std::string, std::map<int, TaskState>* >::iterator iter = tasks_per_minute_.begin();
-			printf("delete %p\n", iter->second);
-			delete iter->second;
-			tasks_per_minute_.erase(iter);
-		}*/
-	}
-
   time_t get_timestamp_from_str(string time_str) {
       struct tm save_tm;
       memset(&save_tm, 0, sizeof(save_tm));
       char buffer[5] = {0};
       strncpy(buffer, time_str.c_str(), 4);
       save_tm.tm_year = atoi(buffer) - 1900;
+      printf("%d\n", save_tm.tm_year);
       memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer + 4, time_str.c_str(), 2);
+      strncpy(buffer, time_str.c_str()+4, 2);
       save_tm.tm_mon = atoi(buffer) - 1;
       memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer + 6, time_str.c_str(), 2);
+      strncpy(buffer, time_str.c_str()+6, 2);
       save_tm.tm_mday = atoi(buffer);
       memset(buffer, 0, sizeof(buffer));
-      strncpy(buffer + 8, time_str.c_str(), 2);
+      strncpy(buffer, time_str.c_str()+8, 2);
       save_tm.tm_hour = atoi(buffer);
+      memset(buffer, 0, sizeof(buffer));
+      strncpy(buffer, time_str.c_str()+10, 2);
+      save_tm.tm_min = atoi(buffer);
+
       return mktime(&save_tm);
   }
 
-  bool check_task_map_overtime(time_t save_stamp) {
-    return time(NULL) - save_stamp > TIME_SECONDS_DELAYED + 2*3600;
-  }
-
   void check_and_clear_task_map() {
-    time_t now_time = time(NULL);
     pthread_mutex_lock(&mutex_);
     // keep 60 
     while (tasks_per_minute_.size() > 60) {

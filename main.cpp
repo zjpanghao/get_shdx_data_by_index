@@ -1,4 +1,4 @@
-/*
+        /*
 *    author: chenxun
 */
 #include <sys/types.h>
@@ -156,7 +156,7 @@ static void *clear_task_thread(void* arg) {
   sleep(3600);
   while(true) {
     info->check_and_clear_task_map();
-    sleep(3600);
+    sleep(5*60);
   }
   return NULL;
 }
