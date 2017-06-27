@@ -14,7 +14,8 @@
 #include <sstream>
 
 #include "curl/curl.h"
-#include "json.h"
+#include "json/json.h"
+#include "json/value.h"
 
 Json::Value get_json_array(const std::string &str);
 

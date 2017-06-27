@@ -61,16 +61,10 @@ public:
       strncpy(buffer, time_str.c_str()+10, 2);
       save_tm.tm_min = atoi(buffer);
 
+
       return mktime(&save_tm);
   }
 
-<<<<<<< HEAD
-=======
-  bool check_task_map_overtime(time_t save_stamp) {
-    return time(NULL) - save_stamp > TIME_SECONDS_DELAYED + 10*60;
-  }
-
->>>>>>> 30cdb3c93bdb1860d7a1666cd556f96259f19781
   void check_and_clear_task_map() {
     pthread_mutex_lock(&mutex_);
     // keep 60 

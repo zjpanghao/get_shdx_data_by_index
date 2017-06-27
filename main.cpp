@@ -1,4 +1,4 @@
-/*
+        /*
 *    author: chenxun
 */
 #include <sys/types.h>
@@ -84,12 +84,7 @@ int main(int argc, char* argv[])
 	
 	char push_data[100] = {0};
 	int partition = 0;
-<<<<<<< HEAD
 	const char* topic = "kun_origin";
-=======
-	const char* topic = "kunyan_to_upload_inter_tab_up";
->>>>>>> 30cdb3c93bdb1860d7a1666cd556f96259f19781
-
 	/*init kafka*/
 	wrapper_Info test_info;
 	if (PRODUCER_INIT_SUCCESS == producer_init(partition, topic, kafka_server.c_str(), &test_msg_delivered, &test_info))

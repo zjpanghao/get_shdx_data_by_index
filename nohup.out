@@ -1,0 +1,12 @@
+mkdir: cannot create directory ‘log0’: File exists
+E0607 14:27:17.891602 32042 main.cpp:222] http://61.129.39.71/telecom-dmp/kv/getValueByKey?token=d33b680eg15c8662b3acgb0b2acf42cagc77ef23722d7d758bfe4e34&table=kunyan_to_upload_inter_tab_up&key=201706070222_ky_0feth url failed201706071422
+E0607 14:29:00.698940 32079 main.cpp:222] http://61.129.39.71/telecom-dmp/kv/getValueByKey?token=d33b680eg15c8662b3acgb0b2acf42cagc77ef23722d7d758bfe4e34&table=kunyan_to_upload_inter_tab_up&key=201706070224_ky_0feth url failed201706071424
+E0607 14:30:26.253985 32049 main.cpp:222] http://61.129.39.71/telecom-dmp/kv/getValueByKey?token=d33b680eg15c8662b3acgb0b2acf42cagc77ef23722d7d758bfe4e34&table=kunyan_to_upload_inter_tab_up&key=201706070225_ky_80000feth url failed201706071425
+E0607 14:34:42.499840 32067 main.cpp:222] http://61.129.39.71/telecom-dmp/kv/getValueByKey?token=d33b680eg15c8662b3acgb0b2acf42cagc77ef23722d7d758bfe4e34&table=kunyan_to_upload_inter_tab_up&key=201706070229_ky_130000feth url failed201706071429
+start tele
+./tele_origin_keep.sh: line 11: 23948 Killed                  nohup ./tele_run_shanghai_index -k 192.168.1.107:9092 -i 0 -p 48 > log0.txt 2>&1
+start tele
+./tele_origin_keep.sh: line 11: 24999 Killed                  nohup ./tele_run_shanghai_index -k 192.168.1.107:9092 -i 0 -p 48 > log0.txt 2>&1
+start tele
+./tele_origin_keep.sh: line 11: 25080 Killed                  nohup ./tele_run_shanghai_index -k 192.168.1.107:9092 -i 0 -p 48 > log0.txt 2>&1
+start tele
