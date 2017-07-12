@@ -14,6 +14,7 @@
 #include "KafkaWrapper.h"
 #include "CurlWrapper.h"
 #include "tele_compress.h"
+#include "tele_queue.h"
 using namespace std;
 
 CurlWrapper curl_wrapper;
@@ -230,16 +231,50 @@ void* run(void* arg) {
 				TeleCompress tele;
 
 				result =  tele.GetProcessResult(result.c_str());
+        TeleData data;
+        data.data = result;
+        data.task_index = iter->first;
+        if (!GetTeleQueue().Add(data)) {
+         LOG(ERROR) << "tele buffer full";
+         sleep(1);
+        }
+#if 0
 				if (PUSH_DATA_SUCCESS != (rc = producer_push_data(result.c_str(), result.length(), info->producer_))) {
           if (iter->first % 10000 == 0)
 					  LOG(ERROR) << "push data failed" << result.length() << "rc:" << rc;
           sleep(1);
-          
         }
+#endif
 			}
 		}
 	}
 	return NULL;
+}
+
+static work_info *info_g_;
+static void *ConsumerThd(void *arg) {
+  const int TASK_PER_SECOND = 3000;
+  int count = TASK_PER_SECOND;
+  while (1) {
+    TeleData data;
+    if (!GetTeleQueue().Pop(&data)) {
+      LOG(INFO) << "Get telequeue empty";
+      sleep(1);
+    } else {
+      if (count-- <= 0) {
+        count = TASK_PER_SECOND;
+        sleep(1);
+      }
+      int rc = 0;
+      const std::string &result = data.data;
+			if (PUSH_DATA_SUCCESS != (rc = producer_push_data(result.c_str(), result.length(), info_g_->producer_))) {
+        if (data.task_index % 10000 == 0)
+					LOG(ERROR) << "push data failed" << result.length() << "rc:" << rc;
+        sleep(1);
+      }
+    }
+
+  }
 }
 
 void start_work_thread(work_info* tasks_info) {
@@ -255,7 +290,9 @@ void start_work_thread(work_info* tasks_info) {
 void start_work_threads(work_info* tasks_info) {
   pthread_t clear_id;
   pthread_t retry_id;
-
+  pthread_t consumer_id;
+  info_g_ = tasks_info;
+  pthread_create(&consumer_id, NULL, ConsumerThd, NULL);
 	for (int i = 0; i < max_thread_num; i++)
 	{
 		start_work_thread(tasks_info);
