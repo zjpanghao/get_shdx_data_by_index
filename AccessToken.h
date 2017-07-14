@@ -6,16 +6,15 @@
 #include "CurlWrapper.h"
 #include "json_data.h"
 
-class AccessToken
-{
-public:
-	AccessToken();
-	~AccessToken();
+class AccessToken {
+ public:
+  AccessToken();
+  ~AccessToken();
 
-	std::string AccessToken::UpdateToken();
+  std::string AccessToken::UpdateToken();
 
-	std::string url2_toKen;
-	pthread_mutex_t* token_mutex;
+  std::string url2_toKen;
+  pthread_mutex_t* token_mutex;
 };
 
 #endif
