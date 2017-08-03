@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.5)
+aux_source_directory(. src)
+include_directories(/home/panghao/include /home/panghao/include/librdkafka)
+link_directories(/home/panghao/libs)
+add_executable(tele_run_shanghai ${src})
+target_link_libraries(tele_run_shanghai crypto curl glog rdkafka jsoncpp)
